@@ -1,0 +1,2 @@
+# MeanStackProject
+MEAN stack application

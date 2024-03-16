@@ -1,0 +1,40 @@
+<div class="container">
+    <!-- No data message -->
+    @if(Employee.length <= 0){
+    <p class="no-data text-center">There is no employee added yet!</p>
+    }
+    <!-- Employee list -->
+    @if(Employee.length > 0){
+    <table class="table table-bordered">
+      <thead class="table-success">
+        <tr>
+          <th scope="col">Employee ID</th>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Designation</th>
+          <th scope="col">Phone No</th>
+          <th scope="col center">Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (employee of Employee; track employee; let  i = $index) {   
+        <tr>
+          <th scope="row">{{employee._id}}</th>
+          <td>{{employee.name}}</td>
+          <td>{{employee.email}}</td>
+          <td>{{employee.designation}}</td>
+          <td>{{employee.phoneNumber}}</td>
+          <td class="text-center edit-block">
+            <span class="edit editBtnMargin" [routerLink]="['/edit-employee/', employee._id]">
+              <button type="button" class="btn btn-success btn-sm">Edit</button>
+            </span>
+            <span class="delete" (click)="removeEmployee(employee, i)">
+              <button type="button" class="btn btn-danger btn-sm">Delete</button>
+            </span>
+          </td>
+        </tr>
+      }
+      </tbody>
+    </table>
+    }
+  </div>

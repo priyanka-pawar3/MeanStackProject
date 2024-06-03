@@ -12,10 +12,16 @@ import {
 export class ApiService {
   baseUri: string = 'http://localhost:4000/api';
   headers = new HttpHeaders().set('Content-Type', 'application/json');
+ 
   constructor(private http: HttpClient) {}
   // Create
   createEmployee(data): Observable<any> {
     let url = `${this.baseUri}/create`;
+    return this.http.post(url, data).pipe(catchError(this.errorMgmt));
+  }
+   // Login
+   loginEmployee(data): Observable<any> {
+    let url = `${this.baseUri}/login`;
     return this.http.post(url, data).pipe(catchError(this.errorMgmt));
   }
   // Get all employees
@@ -60,5 +66,13 @@ export class ApiService {
     return throwError(() => {
       return errorMessage;
     });
+  }
+
+  isLoggedOut() {
+    localStorage.removeItem("isLoggedIn");
+  }
+
+  isLoggedIn() {
+    window.localStorage.setItem('isLoggedIn', "true");
   }
 }

@@ -25,8 +25,6 @@ export class EmployeeListComponent implements OnInit {
     })    
   }
   removeEmployee(employee, index) {
-    console.log("employee ",employee);
-    console.log("index ",index);
     if(window.confirm('Are you sure to delete?')) {
         this.apiService.deleteEmployee(employee._id).subscribe((data) => {
           this.Employee.splice(index, 1);

@@ -77,12 +77,12 @@ export class EmployeeEditComponent implements OnInit {
     if (!this.editForm.valid) {
       return false;
     } else {
-       if (window.confirm('Are you sure to update?')) {
+      if (window.confirm('Are you sure to update?')) {
         let id = this.actRoute.snapshot.paramMap.get('id');
-         this.apiService.updateEmployee(id, this.editForm.value).subscribe({
+        this.apiService.updateEmployee(id, this.editForm.value).subscribe({
           complete: () => {
             this.router.navigateByUrl('/employees-list');
-            console.log('Content updated successfully!');
+            console.log('Employee updated successfully!');
           },
           error: (e) => {
             console.log(e);

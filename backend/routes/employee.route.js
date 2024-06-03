@@ -3,17 +3,57 @@ const app = express();
 const employeeRoute = express.Router();
 // Employee model
 let Employee = require('../models/Employee');
+const bcrypt = require('bcrypt')
 
-// Add Employee
+// Employee Register
 employeeRoute.route('/create').post((req, res, next) => {
-  Employee.create(req.body)
+  Employee.findOne({ email: req.body.email })
     .then((result) => {
-      res.json({
-        data: result,
-        message: "Data successfully added!",
-        status: 200,
-      });
+      if (!result) {
+        bcrypt.hash(req.body.password, 10).then(hash => {
+          req.body.password = hash
+
+          Employee.create(req.body)
+            .then((result) => {
+              res.json({
+                data: result,
+                message: "Employee registered successfully",
+                status: 200,
+              });
+            })
+            .catch((err) => {
+              return next(err);
+            });
+        });
+      } else {
+        res.status(404).send("Email is already exist");
+      }
     })
+    .catch((err) => {
+      return next(err);
+    });
+
+});
+
+// Login Employee
+employeeRoute.route('/login').post((req, res, next) => {
+  const obj = req.body
+  const conditions = { email: obj.email }
+
+  Employee.findOne(conditions)
+    .then((result) => {
+
+      if (result && bcrypt.compareSync(req.body.password, result.password)) {
+        return res.json({
+          data: result,
+          message: "Employee Login successfully",
+          status: 200,
+        });
+      } else {
+        res.status(404).send("Invalid login credentials");
+      }
+    })
+
     .catch((err) => {
       return next(err);
     });
@@ -21,21 +61,14 @@ employeeRoute.route('/create').post((req, res, next) => {
 
 // Get All Employees
 employeeRoute.route('/').get((req, res) => {
-  // Employee.find((error, data) => {
-  //   if (error) {
-  //     return next(error)
-  //   } else {
-  //     res.json(data)
-  //   }
-  // })
-   Employee.find()
-  .then((result) => {
-    res.writeHead(201, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(result));
-  })
-  .catch((err) => {
-    return next(err);
-  });
+  Employee.find()
+    .then((result) => {
+      res.writeHead(201, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(result));
+    })
+    .catch((err) => {
+      return next(err);
+    });
 })
 
 // Get single employee
@@ -61,26 +94,24 @@ employeeRoute.route('/update/:id').put((req, res, next) => {
     .then((result) => {
       res.json({
         data: result,
-        msg: "Data successfully updated.",
+        msg: "Employee updated successfully",
       });
     })
     .catch((err) => {
-      console.log(err);
-     // return next(err);
+      return next(err);
     });
 })
 
 // Delete employee
 employeeRoute.route('/delete/:id').delete((req, res, next) => {
   Employee.findByIdAndDelete(req.params.id)
-  .then(() => {
-    res.json({
-      msg: "Data successfully updated.",
+    .then(() => {
+      res.json({
+        msg: "Employee deleted successfully",
+      });
+    })
+    .catch((err) => {
+      return next(err);
     });
-  })
-  .catch((err) => {
-    console.log(err);
-   // return next(err);
-  });
 })
 module.exports = employeeRoute;

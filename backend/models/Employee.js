@@ -13,6 +13,9 @@ let Employee = new Schema({
    },
    phoneNumber: {
       type: Number
+   },
+   password: {
+      type: String
    }
 }, {
    collection: 'employees'

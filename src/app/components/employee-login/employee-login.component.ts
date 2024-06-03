@@ -1,22 +1,22 @@
+import { Component, OnInit, NgZone, ErrorHandler } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from './../../service/api.service';
-import { Component, OnInit, NgZone } from '@angular/core';
 import { FormGroup, FormBuilder, ReactiveFormsModule,Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common'
 import { RouterLink} from '@angular/router';
+import { error } from 'node:console';
 
 
 @Component({
-  selector: 'app-employee-create',
+  selector: 'app-employee-login',
   standalone: true,
   imports: [CommonModule,ReactiveFormsModule,RouterLink],
-  templateUrl: './employee-create.component.html',
-  styleUrls: ['./employee-create.component.scss'],
+  templateUrl: './employee-login.component.html',
+  styleUrl: './employee-login.component.scss'
 })
-export class EmployeeCreateComponent implements OnInit {
+export class EmployeeLoginComponent {
   submitted = false;
   employeeForm: FormGroup;
-  EmployeeProfile: any = ['Finance', 'BDM', 'HR', 'Sales', 'Admin'];
   constructor(
     public fb: FormBuilder,
     private router: Router,
@@ -28,7 +28,6 @@ export class EmployeeCreateComponent implements OnInit {
   ngOnInit() {}
   mainForm() {
     this.employeeForm = this.fb.group({
-      name: ['', [Validators.required]],
       email: [
         '',
         [
@@ -36,17 +35,10 @@ export class EmployeeCreateComponent implements OnInit {
           Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,3}$'),
         ],
       ],
-      designation: ['', [Validators.required]],
-      phoneNumber: ['', [Validators.required, Validators.pattern('^((\\+91-?)|0)?[0-9]{10}$')]],
       password: ['', [Validators.required]],
     });
   }
-  // Choose designation with select dropdown
-  updateProfile(e) {
-    this.employeeForm.get('designation').setValue(e.value, {
-      onlySelf: true,
-    });
-  }
+ 
   // Getter to access form control
   get myForm() {
     return this.employeeForm.controls;
@@ -56,16 +48,18 @@ export class EmployeeCreateComponent implements OnInit {
     if (!this.employeeForm.valid) {
       return false;
     } else {
-      return this.apiService.createEmployee(this.employeeForm.value).subscribe({
+      return this.apiService.loginEmployee(this.employeeForm.value).subscribe({
         complete: () => {
-          console.log('Employee successfully registered!'),
-            this.ngZone.run(() => this.router.navigateByUrl('/employee-login'));
+          this.apiService.isLoggedIn();
+          console.log('Employee login successfully !'),
+            this.ngZone.run(() => this.router.navigateByUrl('/employees-list'));
         },
         error: (e) => {
-          console.log(e);
-          if (JSON.stringify(e).includes("404")) {
-            alert("Email is already exist. Please sign in");
-          }
+          console.log("error ",e);
+         if(JSON.stringify(e).includes("404")){
+          alert("Invalid login credentials");
+         }
+         
         },
       });
     }
